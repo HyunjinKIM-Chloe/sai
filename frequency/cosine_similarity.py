@@ -1,18 +1,15 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn import preprocessing
-import os
-import glob
-
-import freq_dataset as fd
-dataset = fd.MakeFreqDataset()
+import access_db as db
 
 
-class CosineSimilarity:
+class CosineSimilarity(db.Query):
     def __init__(self):
-        freq_df = dataset.make_dataframe()
-        self.freq_df = freq_df.set_index('name')
+        super().__init__()
+        freq_df = self.read_db('frequency')
+        freq_df.drop('id', axis=1, inplace=True)
+        self.freq_df = freq_df.set_index('track_id')
 
     def make_cos_df(self, z_scale=True):
         if z_scale:
@@ -27,11 +24,18 @@ class CosineSimilarity:
         cos_df.columns = self.freq_df.index
         return cos_df
 
-    def sim_top5(self, cos_df, name):
-        chart = cos_df[[name]].sort_values(by=name, ascending=False)
-        chart = chart.drop(name) # 자기자신은 삭제
-
-        print(f"\n--*--*--*--*--*--\n{name}와 유사한 곡")
-        print("--*--*--*--*--*--\n")
-        print(chart.head(5))
-        return chart.head(5).index.tolist(), chart.reset_index()
+    def make_similarity_df(self):
+        cos_df = self.make_cos_df()
+        print(cos_df)
+        result_df = pd.DataFrame()
+        s1, s2, cos = [], [], []
+        for idx, x in enumerate(range(len(cos_df.index))):
+            for y in range(idx, len(cos_df.index)):
+                s1.append(cos_df.columns[x])
+                s2.append(cos_df.columns[y])
+                cos.append(cos_df.iloc[x, y])
+        result_df['track1'] = s1
+        result_df['track2'] = s2
+        result_df['similarity'] = cos
+        result_df = result_df.drop(result_df[result_df['track1'] == result_df['track2']].index)
+        return result_df
