@@ -26,7 +26,6 @@ class CosineSimilarity(db.Query):
 
     def make_similarity_df(self):
         cos_df = self.make_cos_df()
-        print(cos_df)
         result_df = pd.DataFrame()
         s1, s2, cos = [], [], []
         for idx, x in enumerate(range(len(cos_df.index))):
