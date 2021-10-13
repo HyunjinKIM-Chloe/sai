@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import librosa
+import yaml
 from urllib.request import urlretrieve
 from tqdm import tqdm
 import access_db as db
@@ -9,7 +10,9 @@ import access_db as db
 class Preprocessing(db.Query):
     def __init__(self):
         super().__init__()
-        self.path = " "  # path for local save
+        with open('../config/database.yaml') as f:
+            conf = yaml.load(f)
+        self.path = conf['local_path']  # path for local save
         self.n_fft = 2048
         self.hop_length = 512
         self.frame_length = 2048
@@ -19,18 +22,6 @@ class Preprocessing(db.Query):
         local_path = f"{self.path}{url}"
         urlretrieve(remote_path, local_path)
         y, sr = librosa.load(local_path)
-
-        # y, sr = librosa.load(io.BytesIO(urlopen(url).read()))
-
-        # wav = io.BytesIO()
-        # with urlopen(url) as r:
-        #     r.seek = lambda *args: None  # allow pydub to call seek(0)
-        #     pydub.AudioSegment.from_file(r).export(wav, "wav")
-        # wav.seek(0)
-        # y, sr = librosa.load(wav)
-
-        # response = urlopen(url)
-        # y, sr = librosa.load(response)
 
         return y, sr
 

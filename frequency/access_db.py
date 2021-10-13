@@ -1,15 +1,18 @@
 import pandas as pd
 import pymysql
+import yaml
 from sqlalchemy import create_engine
 pymysql.install_as_MySQLdb()
 
 
 class Query:
     def __init__(self):
-        self.IP = ' '
-        self.USER = ' '
-        self.DB = ' '
-        self.PW = ' '
+        with open('../config/database.yaml') as f:
+            conf = yaml.load(f)
+        self.IP = conf['address']
+        self.USER = conf['user']
+        self.DB = conf['database_name']
+        self.PW = conf['password']
 
     # db cursor 생성
     def connect_sql(self):

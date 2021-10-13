@@ -11,9 +11,12 @@ if __name__ == '__main__':
     try:
         arg1 = sys.argv[1]
         if arg1 == 'frequency':
-            arg2 = int(sys.argv[2])
-            arg3 = int(sys.argv[3])
-            freq_df = sql.make_frequency_df(arg2, arg3)
+            try:
+                arg2 = int(sys.argv[2])
+                arg3 = int(sys.argv[3])
+                freq_df = sql.make_frequency_df(arg2, arg3)
+            except:
+                freq_df = sql.make_frequency_df()
             print(f"Total {len(freq_df)} songs calculation completed!")
             print(freq_df.head())
             # sql.save_sql(engine, freq_df, 'frequency', 'append')
