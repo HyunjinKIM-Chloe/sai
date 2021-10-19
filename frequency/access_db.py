@@ -45,7 +45,7 @@ class Query:
         return result_df
 
     # db 테이블 생성
-    def create_frequency_tb(self, cursor):
+    def create_frequency_tb(self):
         try:
             qry_drop = (f'''
                         drop table {self.DB}.frequency;
@@ -120,7 +120,7 @@ class Query:
                 ''')
         cursor.execute(qry_result)
 
-    def create_similarity_tb(self, cursor):
+    def create_similarity_tb(self):
         try:
             qry_drop = (f'''
                         drop table {self.DB}.similarity;
@@ -139,3 +139,74 @@ class Query:
             );
                 ''')
         cursor.execute(qry_result)
+
+    # create feedback table
+    def create_track_likes_tb(self):
+        try:
+            qry_drop = (f'''
+                           drop table {self.DB}.track_likes;
+                           ''')
+            cursor.execute(qry_drop)
+        except:
+            pass
+
+        qry_result = (f'''
+               CREATE TABLE {self.DB}.track_likes (
+                   id                INT            NOT NULL    AUTO_INCREMENT, 
+                   user_id           INT            NOT NULL,
+                   track_id          INT            NOT NULL, 
+                   CONSTRAINT PK_similarity PRIMARY KEY (id)
+               );
+                   ''')
+        cursor.execute(qry_result)
+
+    def create_track_plays_tb(self):
+        try:
+            qry_drop = (f'''
+                              drop table {self.DB}.track_plays;
+                              ''')
+            cursor.execute(qry_drop)
+        except:
+            pass
+
+        qry_result = (f'''
+                  CREATE TABLE {self.DB}.track_plays (
+                      id                INT            NOT NULL    AUTO_INCREMENT, 
+                      user_id           INT            NOT NULL,
+                      track_id          INT            NOT NULL,
+                      play_time         FLOAT          NOT NULL,
+                      play_pct          FLOAT          NOT NULL, 
+                      CONSTRAINT PK_similarity PRIMARY KEY (id)
+                  );
+                      ''')
+        cursor.execute(qry_result)
+
+    def create_track_similarity_test_tb(self):
+        try:
+            qry_drop = (f'''
+                              drop table {self.DB}.track_similarity_test;
+                              ''')
+            cursor.execute(qry_drop)
+        except:
+            pass
+
+        qry_result = (f'''
+                  CREATE TABLE {self.DB}.track_similarity_test (
+                      id                INT            NOT NULL    AUTO_INCREMENT, 
+                      user_id           INT            NOT NULL,
+                      track1            INT            NOT NULL,
+                      track2            INT            NOT NULL,
+                      feedback          FLOAT          NOT NULL,
+                      CONSTRAINT PK_similarity PRIMARY KEY (id)
+                  );
+                      ''')
+        cursor.execute(qry_result)
+
+
+if __name__ == '__main__':
+    sql = Query()
+    cursor, engine, db = sql.connect_sql()
+
+    sql.create_track_likes_tb()
+    sql.create_track_plays_tb()
+    sql.create_track_similarity_test_tb()
