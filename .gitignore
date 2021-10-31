@@ -5,3 +5,5 @@
 tmp/
 
 codes/.ipynb_checkpoints/
+
+config/
