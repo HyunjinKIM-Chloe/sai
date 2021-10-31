@@ -3,3 +3,5 @@
 *.pyc
 
 tmp/
+
+codes/.ipynb_checkpoints/
