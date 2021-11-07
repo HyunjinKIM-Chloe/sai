@@ -8,8 +8,11 @@ class CosineSimilarity(db.Query):
     def __init__(self):
         super().__init__()
         freq_df = self.read_db('frequency')
-        freq_df.drop('id', axis=1, inplace=True)
-        self.freq_df = freq_df.set_index('track_id')
+        if len(freq_df) == 0:
+            pass
+        else:
+            freq_df.drop('id', axis=1, inplace=True)
+            self.freq_df = freq_df.set_index('track_id')
 
     def make_cos_df(self, z_scale=True):
         if z_scale:

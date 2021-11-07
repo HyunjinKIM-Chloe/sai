@@ -1,5 +1,6 @@
 import sys
 import warnings
+import pandas as pd
 import freq_dataset as freq
 import cosine_similarity as cos
 warnings.filterwarnings(action='ignore')
@@ -18,15 +19,17 @@ if __name__ == '__main__':
             except:
                 freq_df = sql.make_frequency_df()
             print(f"Total {len(freq_df)} songs calculation completed!")
+            freq_df.to_csv(f"frequency_{len(freq_df)}.csv", encoding='utf-8-sig')
             print(freq_df.head())
-            # sql.save_sql(engine, freq_df, 'frequency', 'append')
+            sql.save_sql(engine, freq_df, 'frequency', 'append')
         elif arg1 == 'similarity':
             sim_df = sim.make_similarity_df()
             print(f"Total {len(sim_df)} songs calculation completed!")
             print(sim_df.head())
-            # sql.save_sql(engine, sim_df, 'similarity', 'append')
+            sql.save_sql(engine, sim_df, 'similarity', 'append')
         else:
             print('ERROR, NO ARGUMENTS')
 
     except:
+        freq_df.to_csv(f"frequency_{len(freq_df)}.csv", encoding='utf-8-sig')
         print('ERROR, NO ARGUMENTS')
