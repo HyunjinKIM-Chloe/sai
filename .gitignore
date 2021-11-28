@@ -11,3 +11,7 @@ config/
 files/frequency_2321.csv
 
 files/freq_dataset_test_hj.csv
+
+codes/models/
+
+files/

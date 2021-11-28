@@ -15,6 +15,17 @@ class Preprocessing():
         y, sr = librosa.load(url)
         return y, sr
 
+    def calc_duration(self, path, y, sr):
+        try:
+            audio = wave.open(path)
+            frames = audio.getnframes()
+            rate = audio.getframerate()
+            duration = frames / float(rate)
+        except:
+            # y, sr = librosa.load(p, sr=16000)
+            duration = len(y)/sr
+        return duration
+
     def make_chroma(self, y, sr):
         result = librosa.feature.chroma_stft(y, sr, n_fft=self.n_fft, hop_length=self.hop_length)
         chroma_stft_mean = np.mean(result)
@@ -135,10 +146,12 @@ class MakeFreqDataset(Preprocessing):
         ls_mfcc19_var = []
         ls_mfcc20_mean = []
         ls_mfcc20_var = []
+        ls_duration = []
 
         # tracks_df = self.read_db('tracks')
         for url in tqdm(tracks_df['path'].tolist()[start:end]):
             y, sr = self.read_file(url)
+            duration = self.calc_duration(url, y, sr)
             chroma_stft_mean, chroma_stft_var = self.make_chroma(y, sr)
             rms_mean, rms_var = self.make_rms(y)
             spectral_centroid_mean, spectral_centroid_var = self.make_spectral_centroid(y, sr)
@@ -206,9 +219,15 @@ class MakeFreqDataset(Preprocessing):
             ls_mfcc19_var.append(mfcc_var[18])
             ls_mfcc20_mean.append(mfcc_mean[19])
             ls_mfcc20_var.append(mfcc_var[19])
+            ls_duration.append(duration)
 
         result_df = pd.DataFrame({
             "name": tracks_df['name'].tolist()[start:end],
+            "path": tracks_df['path'].tolist()[start:end],
+            "start": tracks_df['start'].tolist()[start:end],
+            "end": tracks_df['end'].tolist()[start:end],
+            "label": [name.split('/')[-3] for name in tracks_df['path'].tolist()[start:end]],
+            "duration": ls_duration,
             "chroma_stft_mean": ls_chroma_stft_mean,
             "chroma_stft_var": ls_chroma_stft_var,
             "rms_mean": ls_rms_mean,
@@ -268,3 +287,18 @@ class MakeFreqDataset(Preprocessing):
             "mfcc20_var": ls_mfcc20_var})
 
         return result_df
+
+
+if __name__ == '__main__':
+    freq = MakeFreqDataset()
+    s_path = "../sounds/"
+    o_path = list(set(glob.glob(f'{s_path}*/*/*')))  # - set(final_df['path']))
+    path_ls = [file for file in o_path if file.endswith(".mp3") or file.endswith(".wav")]
+    name_ls = [name.split('/')[-1][:-4] for name in path_ls]
+    label_ls = [name.split('/')[-3] for name in path_ls]
+    info_df = pd.DataFrame()
+    info_df['path'] = path_ls
+    info_df['label'] = label_ls
+    info_df['name'] = name_ls
+    result_df = freq.make_frequency_df(tracks_df=info_df[:3])
+    result_df.to_csv("../files/freq_dataset_1113.csv", encoding='utf-8-sig')
