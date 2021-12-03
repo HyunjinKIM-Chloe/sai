@@ -224,9 +224,9 @@ class MakeFreqDataset(Preprocessing):
         result_df = pd.DataFrame({
             "name": tracks_df['name'].tolist()[start:end],
             "path": tracks_df['path'].tolist()[start:end],
-            "start": tracks_df['start'].tolist()[start:end],
-            "end": tracks_df['end'].tolist()[start:end],
-            "label": [name.split('/')[-3] for name in tracks_df['path'].tolist()[start:end]],
+            # "start": tracks_df['start'].tolist()[start:end],
+            # "end": tracks_df['end'].tolist()[start:end],
+            # "label": [name.split('/')[-3] for name in tracks_df['path'].tolist()[start:end]],
             "duration": ls_duration,
             "chroma_stft_mean": ls_chroma_stft_mean,
             "chroma_stft_var": ls_chroma_stft_var,
