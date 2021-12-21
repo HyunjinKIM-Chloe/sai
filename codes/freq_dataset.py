@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import librosa
-from urllib.request import urlretrieve
 from tqdm import tqdm
 
 

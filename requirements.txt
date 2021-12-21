@@ -1,0 +1,12 @@
+glob
+audioread==2.1.9
+librosa==0.8.1
+numpy
+pandas==1.2.4
+PyYAML
+pep8==1.7.1
+regex
+scikit-learn
+scipy
+joblib
+tqdm
