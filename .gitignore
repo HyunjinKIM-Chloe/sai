@@ -1,11 +1,11 @@
 .idea/
 
 *.pyc
-
-tmp/
+*.ipynb
 
 codes/.ipynb_checkpoints/
-codes/*.ipynb
+
+tmp/
 
 config/
 
