@@ -14,7 +14,6 @@ class Preprocessing(fd.MakeFreqDataset):
             conf = yaml.load(f, Loader=yaml.FullLoader)
         self.local_path = conf['local_path']  # path for local save
         self.model_path = conf['model_path']
-        self.file_path = conf['file_path']
         self.label_ls = conf['label_ls']
 
     def make_info_df(self):
