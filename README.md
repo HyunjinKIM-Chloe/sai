@@ -1,5 +1,5 @@
 # Sounds Classification test
-- Predict the label of the sounds with pre-trained models.
+- Predict the label of sounds with pre-trained models.
 - Sounds input type should be .wav and Model should be .pkl file.
 
   ### Class
@@ -15,5 +15,5 @@
   ### 2. Predict a song (arg1: Wav filename - should be string type)
       python __init__.py "filename"
   ### 3. Predict songs with indexing (arg1: start index, arg2: end index)
-  	  # ex: 1st to 100th song of the lists
+  	  # ex: 1st to 100th song of the list
       python __init__.py 0 100
