@@ -1,4 +1,4 @@
-glob
+glob2
 audioread==2.1.9
 librosa==0.8.1
 numpy
