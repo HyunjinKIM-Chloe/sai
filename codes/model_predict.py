@@ -1,6 +1,9 @@
 import freq_dataset as fd
 import pandas as pd
+import numpy as np
 import yaml
+import subprocess
+import os
 import glob
 import joblib
 import warnings
@@ -12,9 +15,29 @@ class Preprocessing(fd.MakeFreqDataset):
         super().__init__()
         with open('../config/config.yaml') as f:
             conf = yaml.load(f, Loader=yaml.FullLoader)
-        self.local_path = conf['local_path']  # path for local save
+        self.local_path = conf['local_path']
+        self.video_path = conf['video_path']
+        self.wav_from_video_path = conf['wav_from_video_path']
         self.model_path = conf['model_path']
         self.label_ls = conf['label_ls']
+        # local path 에 ffmpeg 가 인식할 수 없는 문자는 치환
+        [os.rename(f, f.replace(' ', '')) for f in glob.glob(f"{self.video_path}*")]
+        [os.rename(f, f.replace('(', '_')) for f in glob.glob(f"{self.video_path}*")]
+        [os.rename(f, f.replace(')', '')) for f in glob.glob(f"{self.video_path}*")]
+        [os.rename(f, f.replace(r'\W', '_')) for f in glob.glob(f"{self.video_path}*")]
+
+    def mp4_to_wav(self):
+        mp4_ls = [file for file in glob.glob(f'{self.video_path}*') if file.endswith(".mp4")]
+        mp4_name_ls = [os.path.basename(p).split('.')[0] for p in mp4_ls].sort()
+        wav_name_ls = [os.path.basename(f).split('.')[0] for f in glob.glob(f'{self.wav_from_video_path}*') if f.endswith(".wav")].sort()
+
+        if mp4_name_ls != wav_name_ls:
+            for mp4_name in mp4_ls:
+                filename = os.path.basename(mp4_name).split('.')[0]
+                command = f"ffmpeg -i {mp4_name} -ab 160k -ac 2 -ar 44100 -vn {self.wav_from_video_path}{filename}.wav -y"
+                subprocess.call(command, shell=True)
+        else:
+            pass
 
     def make_info_df(self):
         """
@@ -53,6 +76,7 @@ class Preprocessing(fd.MakeFreqDataset):
 class ModelPredict(Preprocessing):
     def __init__(self):
         super().__init__()
+        self.mp4_to_wav()  # mp4 동영상 에서 wav 음원 추출
         self.info_df = self.make_info_df()
         self.model_ls = self.load_model_ls()
 
