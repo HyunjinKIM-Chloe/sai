@@ -2,7 +2,9 @@ import freq_dataset as fd
 import pandas as pd
 import numpy as np
 import yaml
+import json
 import subprocess
+from datetime import datetime
 import os
 import glob
 import joblib
@@ -19,6 +21,7 @@ class Preprocessing(fd.MakeFreqDataset):
         self.video_path = conf['video_path']
         self.wav_from_video_path = conf['wav_from_video_path']
         self.model_path = conf['model_path']
+        self.json_path = conf['json_path']
         self.label_ls = conf['label_ls']
         # local path 에 ffmpeg 가 인식할 수 없는 문자는 치환
         [os.rename(f, f.replace(' ', '')) for f in glob.glob(f"{self.video_path}*")]
@@ -113,10 +116,36 @@ class ModelPredict(Preprocessing):
 
         return final_result
 
+    def save_json(self, target_df):
+        if len(target_df) == 1:
+            new = []
+            for idx in range(len(self.label_ls)):
+                new.append([f"{self.label_ls[idx]}",
+                            f"{round(target_df.iloc[0][idx]*100, 2)}"])
+            with open(f"{self.json_path}{target_df.index[0]}.json", "w") as json_file:
+                json.dump(new, json_file, indent=True)
+
+        elif len(target_df) > 1:
+            total = []  #쌓기코드
+            for song in target_df.index.tolist():
+                new = []
+                row = target_df.loc[song]
+                for idx in range(len(self.label_ls)):
+                    new.append([f"{self.label_ls[idx]}",
+                                f"{round(row[idx]*100, 2)}"])
+                with open(f"{self.json_path}{song}.json", "w") as json_file:
+                    json.dump(new, json_file, indent=True)
+                total.append(new)  #쌓기코드
+            with open(f"{self.json_path}{len(target_df)}sounds_{datetime.today().strftime('%Y%m%d')}.json", "w") as json_file:
+                json.dump(total, json_file, indent=True)
+        else:
+            print("Failed to save json file!")
+
     def predict_check_result(self, filename=None, start=None, end=None):
         result_df = self.make_predict_df(filename, start, end)
         count_df = result_df.groupby('name').sum() / len(self.model_ls)
         for name, item in count_df.iterrows():
             print(f"'{name}' 은 {round(max(item), 2) * 100}% 의 확률로"
                   f" {item.index[item.tolist().index(max(item))]}로 추정됩니다.")
+        self.save_json(count_df)
         return count_df
