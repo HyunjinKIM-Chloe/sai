@@ -116,7 +116,7 @@ class ModelPredict(Preprocessing):
 
         return final_result
 
-    def save_json(self, target_df):
+    def save_json(self, target_df, name_ls):
         if len(target_df) == 1:
             new = []
             for idx in range(len(self.label_ls)):
@@ -127,13 +127,13 @@ class ModelPredict(Preprocessing):
 
         elif len(target_df) > 1:
             total = []  #쌓기코드
-            for song in target_df.index.tolist():
+            for idx, song in enumerate(target_df.index.tolist()):
                 new = []
                 row = target_df.loc[song]
                 for idx in range(len(self.label_ls)):
                     new.append([f"{self.label_ls[idx]}",
                                 f"{round(row[idx]*100, 2)}"])
-                with open(f"{self.json_path}{song}.json", "w") as json_file:
+                with open(f"{self.json_path}{name_ls[idx]}.json", "w") as json_file:
                     json.dump(new, json_file, indent=True)
                 total.append(new)  #쌓기코드
             with open(f"{self.json_path}{len(target_df)}sounds_{datetime.today().strftime('%Y%m%d')}.json", "w") as json_file:
@@ -147,5 +147,53 @@ class ModelPredict(Preprocessing):
         for name, item in count_df.iterrows():
             print(f"'{name}' 은 {round(max(item), 2) * 100}% 의 확률로"
                   f" {item.index[item.tolist().index(max(item))]}로 추정됩니다.")
-        self.save_json(count_df)
+        name_ls = ['ai_best_final_0',
+                     'ai_best_final_1',
+                     'ai_best_final_2',
+                     'ai_best_final_3',
+                     'ai_best_final_4',
+                     'ai_best_final_5',
+                     'ai_best_final_6',
+                     'ai_best_final_7',
+                     'ai_best_final_8',
+                     'ai_best_final_10',
+                     'ai_best_final_11',
+                     'ai_best_final_12',
+                     'ai_best_final_13',
+                     'ai_best_final_14',
+                     'bird_1',
+                     'bird_2',
+                     'bird_3',
+                     'bird_4',
+                     'bird_6',
+                     'bird_7',
+                     'bird_8',
+                     'dog_1',
+                     'dog_2',
+                     'dog_3',
+                     'dog_4',
+                     'drum_1',
+                     'drum_2',
+                     'drum_3',
+                     'drum_4',
+                     'cat_1',
+                     'cat_2',
+                     'cat_3',
+                     'clap_1',
+                     'clap_2',
+                     'clap_3',
+                     'clap_4',
+                     'shout_1',
+                     'shout_2',
+                     'shout_3',
+                     'shout_4',
+                     'horse_1',
+                     'horse_2',
+                     'horse_3',
+                     'horse_4',
+                     'lion_1',
+                     'lion_2',
+                     'lion_3',
+                     'lion_04']
+        self.save_json(count_df, name_ls)
         return count_df
