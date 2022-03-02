@@ -13,3 +13,8 @@ files/
 codes/jsons/
 
 sound_files/
+*.srt
+
+codes/srt/
+
+*.pkl

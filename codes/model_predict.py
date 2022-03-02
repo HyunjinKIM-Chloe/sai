@@ -93,7 +93,7 @@ class Preprocessing(fd.MakeFreqDataset):
         :return: model list
         """
         if filters is None:
-            model_ls = list(set(glob.glob(f'{self.model_path}*')))
+            model_ls = list(set(glob.glob(f'{self.model_path}*'))) + list(set(glob.glob(f'{self.model_path}*/*')))
         else:
             model_ls = []
             for filter in filters:
